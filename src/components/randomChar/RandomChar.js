@@ -4,35 +4,56 @@ import MarvelService from '../../services/MarvelService';
 import mjolnir from '../../resources/img/mjolnir.png';
 
 class RandomChar extends Component {
+    constructor(props) {
+        super(props);
+        this.updateChar();
+    }
     state = {
-        name: null,
-        description: null,
-        thumbnail: null,
-        homepage: null,
-        wiki: null
+        char: {
+            name: null,
+            description: null,
+            thumbnail: null,
+            homepage: null,
+            wiki: null
+        }
     }
 
     // Для работы с классом нужно создать его экземпляр
     marvelService = new MarvelService();
 
+    // Изменение стейта при загрузке персонажа
+    onCharLoaded = (char) => {
+        //проверка на наличие описания персонажа
+        if (!char.description) {
+            this.setState({
+                char: {
+                    ...char,
+                    description: 'This character has not description yet..'
+                }
+            })
+        } else {
+            this.setState({ char }) // == ({char: char})
+        }
+        // проверка на длину строки описания
+        if (char.description && char.description.length > 50) {
+            char.description = char.description.slice(0,50) + '...';
+            this.setState({ char })
+        }
+
+
+    }
+
+
     // вывод случайного персонажа через запрос к API на сервер Marvell. Используется метод класса marvelservice запроса
     updateChar = () => {
-        const id = 1011005;
+        const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
         this.marvelService
             .getCharacter(id)
-            .then(res => {
-                this.setState({
-                    name: res.data.results[0].name,
-                    description: res.data.results[0].description,
-                    thumbnail: res.data.results[0].thumbnail.path + '.' + res.data.results[0].thumbnail.extension,
-                    homepage: res.data.results[0].urls[0].url,
-                    wiki: res.data.results[0].urls[1].url
-                })
-            })
+            .then(this.onCharLoaded)
     }
 
     render() {
-        const { name, description, thumbnail, homepage, wiki } = this.state;
+        const { char: { name, description, thumbnail, homepage, wiki } } = this.state;
         return (
             <div className="randomchar" >
                 <div className="randomchar__block">

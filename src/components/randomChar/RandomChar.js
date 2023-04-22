@@ -28,7 +28,7 @@ class RandomChar extends Component {
             this.setState({
                 char: {
                     ...char,
-                    description: 'This character has not description yet..',
+                    description: 'There is no description for this character...',
                 },
                 loading: false,
             })

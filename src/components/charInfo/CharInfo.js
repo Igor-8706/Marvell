@@ -27,8 +27,14 @@ class CharInfo extends Component {
         if (this.props.charId !== prevProps.charId) {
             this.updateChar();
         }
-
     }
+
+    //Хук, отслеживание ошибки в компоненте. Не работает после 16 версии реакта. Вместо него используются предохранители.
+    // componentDidCatch(err, info){
+    //     this.setState({error: true})
+    // }
+
+    
 
     // Загрузка персонажа при клике на карточку в charlist
     updateChar = () => {

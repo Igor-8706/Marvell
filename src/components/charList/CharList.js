@@ -2,6 +2,7 @@ import { Component } from 'react';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
+import PropTypes from 'prop-types'; // проверка типа данных пропсов
 import './charList.scss';
 
 class CharList extends Component {
@@ -112,4 +113,7 @@ class CharList extends Component {
     }
 }
 
+CharList.propTypes = {
+    onCharSelected: PropTypes.func
+}
 export default CharList;

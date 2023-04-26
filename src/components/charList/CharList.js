@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
@@ -15,7 +15,7 @@ class CharList extends Component {
         offset: 210,
         charEnded: false
     }
-
+    ref = [];
     marvelService = new MarvelService();
 
     componentDidMount() {
@@ -41,7 +41,7 @@ class CharList extends Component {
         if (newCharList.length < 9) { // если персонажи закончились
             ended = true
         }
-        this.setState(({offset, charList}) => ({ //круглые скобки означают, что мы возвращаем объект из функции, вместо return
+        this.setState(({ offset, charList }) => ({ //круглые скобки означают, что мы возвращаем объект из функции, вместо return
             charList: [...charList, ...newCharList],
             loading: false,
             newItemLoading: false,
@@ -57,20 +57,44 @@ class CharList extends Component {
         })
     }
 
+    // Формирование массива элементов li.
+    setCharRef = (elem) => {
+        this.ref.push(elem);
+
+    }
+    // Выделение цветом выбранного персонажа, реализовано при помощи массива с элементами (рефы)
+    coloringSelectedChar = (id) => {
+        this.ref.forEach(elem => {
+            elem.classList.remove('char__item_selected')
+        })
+        this.ref[id].classList.add('char__item_selected')
+        this.ref[id].focus();
+    }
+
     // Этот метод создан для оптимизации, 
     // чтобы не помещать такую конструкцию в метод render
     renderItems(arr) {
-        const items = arr.map((item) => {
+        const items = arr.map((item, i) => {
             let imgStyle = { 'objectFit': 'cover' };
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = { 'objectFit': 'unset' };
             }
-
             return (
                 <li
+                    ref={this.setCharRef} // каждая нода через реф записывается в массив
+                    tabIndex={0}
                     className="char__item"
                     key={item.id}
-                    onClick={() => this.props.onCharSelected(item.id)}>
+                    onClick={() => {
+                        this.props.onCharSelected(item.id)
+                        this.coloringSelectedChar(i)
+                    }}
+                    onKeyPress={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            this.props.onCharSelected(item.id);
+                            this.coloringSelectedChar(i);
+                        }
+                    }}>
                     <img src={item.thumbnail} alt={item.name} style={imgStyle} />
                     <div className="char__name">{item.name}</div>
                 </li>
@@ -85,7 +109,6 @@ class CharList extends Component {
     }
 
     render() {
-
         const { charList, loading, error, offset, newItemLoading, charEnded } = this.state;
 
         const items = this.renderItems(charList);
@@ -99,13 +122,13 @@ class CharList extends Component {
                 {errorMessage}
                 {spinner}
                 {content}
-                <button 
+                <button
                     className="button button__main button__long"
-                    disabled = {newItemLoading}
-                    style={{'display' : charEnded ? 'none' : 'block'}}
+                    disabled={newItemLoading}
+                    style={{ 'display': charEnded ? 'none' : 'block' }}
                     onClick={() => this.onRequest(offset)}
 
-                    >
+                >
                     <div className="inner">load more</div>
                 </button>
             </div>

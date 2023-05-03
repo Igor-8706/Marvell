@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -6,105 +6,113 @@ import Skeleton from '../skeleton/Skeleton'
 import PropTypes from 'prop-types'; // проверка типа данных пропсов
 import './charInfo.scss';
 
-class CharInfo extends Component {
+const CharInfo = (props) => {
 
-    state = {
-        char: null,
-        loading: false,
-        error: false,
-    }
+    const [char, setChar] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
     // Для работы с классом нужно создать его экземпляр
-    marvelService = new MarvelService();
+    // marvelService = new MarvelService();
+    const marvelService = new MarvelService();
 
     // Хук, вызывается после того как компонент был создан на странице
-    componentDidMount() {
-        this.updateChar();
-    }
+    // componentDidMount() {
+    //     this.updateChar();
+    // }
+    useEffect(() => {
+        updateChar()
+    }, [])
 
     // Хук, срабатывает когда в компонент приходит новый пропс, изменяется стейт
-    componentDidUpdate(prevProps, prevState) {
-        // проверка, действительно ли изменились пропсы, иначе приложение зациклится
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
-        }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //     // проверка, действительно ли изменились пропсы, иначе приложение зациклится
+    //     if (this.props.charId !== prevProps.charId) {
+    //         this.updateChar();
+    //     }
+    // }
+    useEffect(() => {
+        updateChar();
+    }, [props.charId])
 
     //Хук, отслеживание ошибки в компоненте. Не работает после 16 версии реакта. Вместо него используются предохранители.
     // componentDidCatch(err, info){
     //     this.setState({error: true})
     // }
 
-    
-
     // Загрузка персонажа при клике на карточку в charlist
-    updateChar = () => {
-        const { charId } = this.props;
+    const updateChar = () => {
+        const { charId } = props;
         if (!charId) {
             return;
         }
-        this.onCharLoading();
-        this.marvelService
+        onCharLoading();
+        marvelService
             .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
+            .then(onCharLoaded)
+            .catch(onError)
     }
 
     // Изменение стейта при загрузке персонажа
-    onCharLoaded = (char) => {
+    const onCharLoaded = (char) => {
         //проверка на наличие описания персонажа
         if (!char.description) {
-            this.setState({
-                char: {
-                    ...char,
-                    description: 'There is no description for this character...',
-                },
-                loading: false,
-            })
+            // this.setState({
+            //     char: {
+            //         ...char,
+            //         description: 'There is no description for this character...',
+            //     },
+            //     loading: false,
+            // })
+            setChar({ ...char, description: 'There is no description for this character...' });
+            setLoading(false);
         } else {
-            this.setState({ char, loading: false }) // == ({char: char})
+            // this.setState({ char, loading: false }) // == ({char: char})
+            setChar(char);
+            setLoading(false);
         }
         // проверка на длину строки описания
         if (char.description && char.description.length > 50) {
             char.description = char.description.slice(0, 50) + '...';
-            this.setState({ char, loading: false })
+            // this.setState({ char, loading: false })
+            setChar(char);
+            setLoading(false);
         }
     }
 
     // Ошибка при получении данных от сервера
-    onError = () => {
-        this.setState(
-            {
-                loading: false,
-                error: true
-            })
+    const onError = () => {
+        // this.setState(
+        //     {
+        //         loading: false,
+        //         error: true
+        //     })
+        setLoading(false);
+        setError(true);
     }
 
     // Установка состояния для показа спинера при загрузке данных
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        })
+    const onCharLoading = () => {
+        // this.setState({
+        //     loading: true
+        // })
+        setLoading(true)
     }
 
-    render() {
-        const { char, loading, error } = this.state;
+    const skeleton = char || loading || error ? null : <Skeleton /> // Если персонаж не загружен, ошибки нет, загрузки нет, то выводим заглушку Скелетон
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(error || loading || !char) ? <View char={char} /> : null; // если нет ошибки или если нет загрузки то возращаем контент
 
-        const skeleton = char || loading || error ? null : <Skeleton /> // Если персонаж не загружен, ошибки нет, загрузки нет, то выводим заглушку Скелетон
-        const errorMessage = error ? <ErrorMessage /> : null;
-        const spinner = loading ? <Spinner /> : null;
-        const content = !(error || loading || !char) ? <View char={char} /> : null; // если нет ошибки или если нет загрузки то возращаем контент
-
-        return (
-            <div className="char__info">
-                {/* при помощи условий отобразится только один компонент */}
-                {skeleton}
-                {errorMessage}
-                {spinner}
-                {content}
-            </div>
-        )
-    }
+    return (
+        <div className="char__info">
+            {/* при помощи условий отобразится только один компонент */}
+            {skeleton}
+            {errorMessage}
+            {spinner}
+            {content}
+        </div>
+    )
 }
 
 const View = ({ char }) => {
@@ -117,7 +125,7 @@ const View = ({ char }) => {
     return (
         <>
             <div className="char__basics">
-                <img src={thumbnail} alt={name} style = {imgStyle} />
+                <img src={thumbnail} alt={name} style={imgStyle} />
                 <div>
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
@@ -137,12 +145,13 @@ const View = ({ char }) => {
             <ul className="char__comics-list">
                 {comics.length > 0 ? null : 'There is no comics with this character'}
                 {comics.map((item, i) => {
-                    if (i > 9 ) return;
+                    if (i > 9) return;
                     return (
-                        <li key = {i} className="char__comics-item">
+                        <li key={i} className="char__comics-item">
                             {item.name}
                         </li>
-                    )}
+                    )
+                }
                 )}
 
             </ul>

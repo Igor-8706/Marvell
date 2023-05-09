@@ -1,11 +1,13 @@
 import { useState } from "react";
 import AppHeader from "../appHeader/AppHeader";
+import AppBanner from "../appBanner/AppBanner";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
+import ComicsList from "../comicsList/ComicsList";
 
 const App = () => {
     const [selectedChar, setChar] = useState(null); //хук, устанавливает state, аналог сет стейт в классовых компонентах
@@ -18,7 +20,7 @@ const App = () => {
         <div className="app">
             <AppHeader />
             <main>
-                <ErrorBoundary>
+                {/* <ErrorBoundary>
                     <RandomChar />
                 </ErrorBoundary>
                 <div className="char__content">
@@ -26,10 +28,14 @@ const App = () => {
                         <CharList onCharSelected={onCharSelected} />
                     </ErrorBoundary>
                     <ErrorBoundary>
-                        <CharInfo charId={selectedChar} /> {/*Предохранитель, в случае поломки charInfo*/}
+                        <CharInfo charId={selectedChar} /> Предохранитель, в случае поломки charInfo
                     </ErrorBoundary>
                 </div>
-                <img className="bg-decoration" src={decoration} alt="vision" />
+                <img className="bg-decoration" src={decoration} alt="vision" /> */}
+                <AppBanner></AppBanner>
+                {/* <ErrorBoundary> */}
+                <ComicsList/>
+                {/* </ErrorBoundary> */}
             </main>
         </div>
     )

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton'
@@ -9,12 +9,11 @@ import './charInfo.scss';
 const CharInfo = (props) => {
 
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const { loading, error, getCharacter, clearError} = useMarvelService();
 
-    // Для работы с классом нужно создать его экземпляр
-    // marvelService = new MarvelService();
-    const marvelService = new MarvelService();
+    // // Для работы с классом нужно создать его экземпляр
+    // // marvelService = new MarvelService();
+    // const marvelService = new MarvelService();
 
     // Хук, вызывается после того как компонент был создан на странице
     // componentDidMount() {
@@ -46,11 +45,9 @@ const CharInfo = (props) => {
         if (!charId) {
             return;
         }
-        onCharLoading();
-        marvelService
-            .getCharacter(charId)
+        clearError();
+        getCharacter(charId)
             .then(onCharLoaded)
-            .catch(onError)
     }
 
     // Изменение стейта при загрузке персонажа
@@ -65,38 +62,16 @@ const CharInfo = (props) => {
             //     loading: false,
             // })
             setChar({ ...char, description: 'There is no description for this character...' });
-            setLoading(false);
         } else {
             // this.setState({ char, loading: false }) // == ({char: char})
             setChar(char);
-            setLoading(false);
         }
         // проверка на длину строки описания
         if (char.description && char.description.length > 50) {
             char.description = char.description.slice(0, 50) + '...';
             // this.setState({ char, loading: false })
             setChar(char);
-            setLoading(false);
         }
-    }
-
-    // Ошибка при получении данных от сервера
-    const onError = () => {
-        // this.setState(
-        //     {
-        //         loading: false,
-        //         error: true
-        //     })
-        setLoading(false);
-        setError(true);
-    }
-
-    // Установка состояния для показа спинера при загрузке данных
-    const onCharLoading = () => {
-        // this.setState({
-        //     loading: true
-        // })
-        setLoading(true)
     }
 
     const skeleton = char || loading || error ? null : <Skeleton /> // Если персонаж не загружен, ошибки нет, загрузки нет, то выводим заглушку Скелетон

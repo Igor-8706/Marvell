@@ -1,43 +1,24 @@
-import { useState } from "react";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import AppHeader from "../appHeader/AppHeader";
-import AppBanner from "../appBanner/AppBanner";
-import RandomChar from "../randomChar/RandomChar";
-import CharList from "../charList/CharList";
-import CharInfo from "../charInfo/CharInfo";
-import ErrorBoundary from "../errorBoundary/ErrorBoundary";
-
-import decoration from '../../resources/img/vision.png';
-import ComicsList from "../comicsList/ComicsList";
+import { MainPage, ComicsPage } from '../pages';
 
 const App = () => {
-    const [selectedChar, setChar] = useState(null); //хук, устанавливает state, аналог сет стейт в классовых компонентах
-
-    const onCharSelected = (id) => {
-        setChar(id);
-    }
-
     return (
-        <div className="app">
-            <AppHeader />
-            <main>
-                {/* <ErrorBoundary>
-                    <RandomChar />
-                </ErrorBoundary>
-                <div className="char__content">
-                    <ErrorBoundary>
-                        <CharList onCharSelected={onCharSelected} />
-                    </ErrorBoundary>
-                    <ErrorBoundary>
-                        <CharInfo charId={selectedChar} /> Предохранитель, в случае поломки charInfo
-                    </ErrorBoundary>
-                </div>
-                <img className="bg-decoration" src={decoration} alt="vision" /> */}
-                <AppBanner></AppBanner>
-                {/* <ErrorBoundary> */}
-                <ComicsList/>
-                {/* </ErrorBoundary> */}
-            </main>
-        </div>
+        <Router>
+            <div className="app">
+                <AppHeader />
+                <main>
+                    <Switch> {/* для загрузки только одной страницы. без switch обе страницы загрузятся в одном окне*/}
+                        <Route exact path="/Marvell">  {/* первая страница. exact - полное совпадение пути*/}
+                            <MainPage />
+                        </Route>
+                        <Route exact path="/Marvell/comics">  {/* вторая страница*/}
+                            <ComicsPage />
+                        </Route>
+                    </Switch>
+                </main>
+            </div>
+        </Router>
     )
 }
 

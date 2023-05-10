@@ -11,9 +11,20 @@ const AppHeader = () => {
             </h1>
             <nav className="app__menu">
                 <ul>
-                    <li><NavLink exact activeStyle={{'color': '#9f0013'}} to="/Marvell">Characters</NavLink></li>
+                    <li><NavLink
+                        end
+                        // activeStyle={{ 'color': '#9f0013' }} для 5 версии react router
+                        style={({isActive}) => ({color: isActive ? '#9f0013' : 'inherit'})}
+                        to="/Marvell">Characters
+                    </NavLink>
+                    </li>
                     /
-                    <li><NavLink exact activeStyle={{'color': '#9f0013'}} to = "/Marvell/comics">Comics</NavLink></li>
+                    <li><NavLink
+                        end
+                        style={({isActive}) => ({color: isActive ? '#9f0013' : 'inherit'})}
+                        to="/Marvell/comics">Comics
+                    </NavLink>
+                    </li>
                 </ul>
             </nav>
         </header>

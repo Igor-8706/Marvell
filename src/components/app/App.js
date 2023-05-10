@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import AppHeader from "../appHeader/AppHeader";
 import { MainPage, ComicsPage } from '../pages';
 
@@ -8,14 +8,10 @@ const App = () => {
             <div className="app">
                 <AppHeader />
                 <main>
-                    <Switch> {/* для загрузки только одной страницы. без switch обе страницы загрузятся в одном окне*/}
-                        <Route exact path="/Marvell">  {/* первая страница. exact - полное совпадение пути*/}
-                            <MainPage />
-                        </Route>
-                        <Route exact path="/Marvell/comics">  {/* вторая страница*/}
-                            <ComicsPage />
-                        </Route>
-                    </Switch>
+                    <Routes> {/* для загрузки только одной страницы. без switch(routes) обе страницы загрузятся в одном окне*/}
+                        <Route  path="/Marvell" element={<MainPage/>} />  {/* первая страница. exact(для версии 5) - полное совпадение пути*/}
+                        <Route  path="Marvell/comics" element={<ComicsPage/>} />  {/* вторая страница*/}
+                    </Routes>
                 </main>
             </div>
         </Router>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
@@ -13,6 +14,7 @@ const CharList = (props) => {
     const [charEnded, setCharEnded] = useState(false);
 
     const { loading, error, getAllCharacters } = useMarvelService();
+    const duration = 1200; //для анимации
 
     useEffect(() => {
         onRequest(offset, true); // хук состояния, эмуляция хука жизненного цикла componentDidMount. 
@@ -71,30 +73,35 @@ const CharList = (props) => {
                 imgStyle = { 'objectFit': 'unset' };
             }
             return (
-                <li
-                    ref={el => ref.current[i] = el} // каждая нода через реф записывается в массив. el - ссылка на элемент, на котором реф был вызван
-                    tabIndex={0}
-                    className="char__item"
-                    key={item.id}
-                    onClick={() => {
-                        props.onCharSelected(item.id)
-                        coloringSelectedChar(i)
-                    }}
-                    onKeyPress={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
-                            props.onCharSelected(item.id);
-                            coloringSelectedChar(i);
-                        }
-                    }}>
-                    <img src={item.thumbnail} alt={item.name} style={imgStyle} />
-                    <div className="char__name">{item.name}</div>
-                </li>
+                <CSSTransition key={item.id} timeout={duration} classNames='char-animate'>
+                    <li
+                        ref={el => ref.current[i] = el} // каждая нода через реф записывается в массив. el - ссылка на элемент, на котором реф был вызван
+                        tabIndex={0}
+                        className="char__item"
+                        // key={item.id}
+                        // key={i}
+                        onClick={() => {
+                            props.onCharSelected(item.id)
+                            coloringSelectedChar(i)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === ' ' || e.key === "Enter") {
+                                props.onCharSelected(item.id);
+                                coloringSelectedChar(i);
+                            }
+                        }}>
+                        <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+                        <div className="char__name">{item.name}</div>
+                    </li>
+                </CSSTransition>
             )
         });
         // А эта конструкция вынесена для центровки спиннера/ошибки
         return (
             <ul className="char__grid">
-                {items}
+                <TransitionGroup component={null}> {/* TransGroup - автоматически следит за изменением элементов. component = null для того чтобы не рендерить лишний div */}
+                    {items}
+                </TransitionGroup>
             </ul>
         )
     }

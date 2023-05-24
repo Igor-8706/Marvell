@@ -32,6 +32,11 @@ const useMarvelService = () => {
         const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
         return _transformCharacter(res.data.results[0]);
     }
+    // получение персонажа по имени
+    const getCharacterByName = async (name) => {
+		const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
+		return res.data.results.map(_transformCharacter);
+	};
 
     // метод трансфомирует полученные от сервера данные удаляя ненужные в необходимый нам формат. возвращает объект с данными
     const _transformCharacter = (char) => {
@@ -64,7 +69,7 @@ const useMarvelService = () => {
 		};
     }
 
-    return {loading, error, getCharacter, getAllCharacters, clearError,getComics, getComic}
+    return {loading, error, getCharacter, getAllCharacters, clearError,getComics, getComic, getCharacterByName}
 }
 
 export default useMarvelService;

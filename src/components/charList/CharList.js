@@ -33,7 +33,6 @@ const CharList = (props) => {
         if (newCharList.length < 9) { // если персонажи закончились
             ended = true
         }
-
         // this.setState(({ offset, charList }) => ({ //круглые скобки означают, что мы возвращаем объект из функции, вместо return
         //     charList: [...charList, ...newCharList],
         //     loading: false,
@@ -79,7 +78,7 @@ const CharList = (props) => {
                         tabIndex={0}
                         className="char__item"
                         // key={item.id}
-                        // key={i}
+                        key={i}
                         onClick={() => {
                             props.onCharSelected(item.id)
                             coloringSelectedChar(i)
@@ -99,7 +98,7 @@ const CharList = (props) => {
         // А эта конструкция вынесена для центровки спиннера/ошибки
         return (
             <ul className="char__grid">
-                <TransitionGroup component={null}> {/* TransGroup - автоматически следит за изменением элементов. component = null для того чтобы не рендерить лишний div */}
+                <TransitionGroup component={null}> {/* TransGroup - автоматически следит за изменением component = null для того чтобы не рендерить лишний div */}
                     {items}
                 </TransitionGroup>
             </ul>

@@ -1,7 +1,7 @@
 import { useHttp } from "../hooks/http.hook";
 
 const useMarvelService = () => {
-    const { loading, request, error , clearError} = useHttp();
+    const { request, clearError, process, setProcess} = useHttp();
 
     const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     const _apiKey = 'apikey=7cde0c423056bf2a944614bc08284093';
@@ -23,9 +23,9 @@ const useMarvelService = () => {
 
     //получение одного комикса
     const getComic = async (id) => {
-		const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
-		return _transformComics(res.data.results[0]);
-	};
+        const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.results[0]);
+    };
 
     // получение одного персонажа из БД
     const getCharacter = async (id) => {
@@ -34,9 +34,9 @@ const useMarvelService = () => {
     }
     // получение персонажа по имени
     const getCharacterByName = async (name) => {
-		const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
-		return res.data.results.map(_transformCharacter);
-	};
+        const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
+        return res.data.results.map(_transformCharacter);
+    };
 
     // метод трансфомирует полученные от сервера данные удаляя ненужные в необходимый нам формат. возвращает объект с данными
     const _transformCharacter = (char) => {
@@ -54,22 +54,31 @@ const useMarvelService = () => {
     // трансформирование данных с комиксами
     const _transformComics = (comics) => {
         return {
-			id: comics.id,
-			title: comics.title,
-			description: comics.description || "There is no description",
-			pageCount: comics.pageCount
-				? `${comics.pageCount} p.`
-				: "No information about the number of pages",
-			thumbnail: comics.thumbnail.path + "." + comics.thumbnail.extension,
-			language: comics.textObjects[0]?.language || "en-us",
-			// optional chaining operator
-			price: comics.prices[0].price
-				? `${comics.prices[0].price}$`
-				: "not available",
-		};
+            id: comics.id,
+            title: comics.title,
+            description: comics.description || "There is no description",
+            pageCount: comics.pageCount
+                ? `${comics.pageCount} p.`
+                : "No information about the number of pages",
+            thumbnail: comics.thumbnail.path + "." + comics.thumbnail.extension,
+            language: comics.textObjects[0]?.language || "en-us",
+            // optional chaining operator
+            price: comics.prices[0].price
+                ? `${comics.prices[0].price}$`
+                : "not available",
+        };
     }
 
-    return {loading, error, getCharacter, getAllCharacters, clearError,getComics, getComic, getCharacterByName}
+    return {
+        process,
+        setProcess,
+        clearError,
+        getCharacter,
+        getAllCharacters,
+        getComics,
+        getComic,
+        getCharacterByName
+    }
 }
 
 export default useMarvelService;

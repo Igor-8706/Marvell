@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import './randomChar.scss';
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContent from '../../utils/setContent';
 import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar = () => {
     const [char, setChar] = useState(null);
-    const { loading, error, getCharacter, clearError } = useMarvelService();
+    const { getCharacter, clearError, process, setProcess } = useMarvelService();
 
     // Для работы с классом нужно создать его экземпляр  - для классового компонента
     // const marvelService = new MarvelService();
@@ -42,17 +41,13 @@ const RandomChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000); //выбор персонажа в определенном интервале id
         getCharacter(id)
             .then(onCharLoaded) // в метод будут переданы данные от запроса автоматически
+            .then(()=> setProcess('confirmed'))
     }
 
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(error || loading || !char) ? <View char={char} /> : null; // если нет ошибки или если нет загрузки то возращаем контент
     return (
         <div className="randomchar" >
-            {errorMessage} {/* произойдет отрисовка того, что не null*/}
-            {spinner}
-            {content}
+            {setContent(process, View, char)}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br />
@@ -71,8 +66,8 @@ const RandomChar = () => {
 
 }
 
-const View = ({ char }) => {
-    const { name, description, thumbnail, homepage, wiki } = char
+const View = ({ data }) => {
+    const { name, description, thumbnail, homepage, wiki } = data
     let notImage = false;
     if (thumbnail.indexOf('available') > -1) {
         notImage = true

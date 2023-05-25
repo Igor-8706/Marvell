@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom';
-import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Skeleton from '../skeleton/Skeleton'
 import PropTypes from 'prop-types'; // проверка типа данных пропсов
-import { SingleComicPage } from '../pages';
+import useMarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 import './charInfo.scss';
 
 const CharInfo = (props) => {
 
     const [char, setChar] = useState(null);
-    const { loading, error, getCharacter, clearError} = useMarvelService();
+    const { getCharacter, clearError, process, setProcess} = useMarvelService();
 
     // // Для работы с классом нужно создать его экземпляр
     // // marvelService = new MarvelService();
@@ -50,6 +47,7 @@ const CharInfo = (props) => {
         clearError();
         getCharacter(charId)
             .then(onCharLoaded)
+            .then(()=> setProcess('confirmed'))
     }
 
     // Изменение стейта при загрузке персонажа
@@ -76,25 +74,27 @@ const CharInfo = (props) => {
         }
     }
 
-    const skeleton = char || loading || error ? null : <Skeleton /> // Если персонаж не загружен, ошибки нет, загрузки нет, то выводим заглушку Скелетон
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(error || loading || !char) ? <View char={char} /> : null; // если нет ошибки или если нет загрузки то возращаем контент
+    // const skeleton = char || loading || error ? null : <Skeleton /> // Если персонаж не загружен, ошибки нет, загрузки нет, то выводим заглушку Скелетон
+    // const errorMessage = error ? <ErrorMessage /> : null;
+    // const spinner = loading ? <Spinner /> : null;
+    // const content = !(error || loading || !char) ? <View char={char} /> : null; // если нет ошибки или если нет загрузки то возращаем контент
 
     return (
         <div className="char__info">
-            {/* при помощи условий отобразится только один компонент */}
+
+            {setContent(process, View, char)}
+
+            {/* при помощи условий отобразится только один компонент
             {skeleton}
             {errorMessage}
             {spinner}
-            {content}
+            {content} */}
         </div>
     )
 }
 
-const View = ({ char }) => {
-    const { name, description, thumbnail, homepage, wiki, comics, id } = char;
-    const notComics = 'not comics';
+const View = ({ data }) => {
+    const { name, description, thumbnail, homepage, wiki, comics, id } = data;
     let imgStyle = { 'objectFit': 'cover' };
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
         imgStyle = { 'objectFit': 'unset' };

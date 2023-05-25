@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -124,10 +124,15 @@ const CharList = (props) => {
             </ul>
         )
     }
+    // конструция создана для мемоизации функции setcontent. Это позволяет не перерисовавыть ее каждый раз при перерисовке 
+    // родительского компонента MainPage. Позволяет решить вопрос с выделением цветом выбранного персонажа
+    const elements = useMemo(() => {
+        return setContent(process, () => renderItems(charList), newItemLoading)
+    }, [process])
 
     return (
         <div className="char__list">
-            {setContent(process, () => renderItems(charList), newItemLoading)}
+            {elements}
             <button
                 className="button button__main button__long"
                 disabled={newItemLoading}
